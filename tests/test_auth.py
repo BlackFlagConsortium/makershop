@@ -29,7 +29,7 @@ class LoginTestCase(MakershopTestCase):
         super(LoginTestCase, self).setUp()
         self.client = self.app.test_client()
 
-    def test_auth_failed(self):
+    def test_auth_failure_user_not_found(self):
         r = self.client.post(
             '/user/login/',
             data={
@@ -43,3 +43,39 @@ class LoginTestCase(MakershopTestCase):
             status_code=http.FORBIDDEN,
             message='Login failed.'
         )
+
+    def test_auth_failure_bad_password(self):
+        with self.app.test_request_context():
+            u = User(email='foo@bar.com', password='correct password')
+            db.session.add(u)
+            db.session.commit()
+
+        r = self.client.post(
+            '/user/login/',
+            data={
+                'username': 'foo@bar.com',
+                'password': 'incorrect password',
+            }
+        )
+
+        self.assertApiError(
+            response=r,
+            status_code=http.FORBIDDEN,
+            message='Login failed.'
+        )
+
+    def test_auth_success(self):
+        with self.app.test_request_context():
+            u = User(email='foo@bar.com', password='asdfasdf')
+            db.session.add(u)
+            db.session.commit()
+
+        r = self.client.post(
+            '/user/login/',
+            data={
+                'username': 'foo@bar.com',
+                'password': 'asdfasdf',
+            }
+        )
+
+        self.assertEqual(http.OK, r.status_code)

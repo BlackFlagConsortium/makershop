@@ -18,7 +18,7 @@ def login():
         return ApiResponse('"password" is required', status=http.BAD_REQUEST)
 
     try:
-        if User.query.filter_by(id=u).one().check_password(p):
+        if User.find_by_email(u).check_password(p):
             return ApiResponse('Login successful.')
     except NoResultFound:
         # User doesn't exist

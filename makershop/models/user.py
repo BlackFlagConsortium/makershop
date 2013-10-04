@@ -15,11 +15,6 @@ class User(db.Model):
         lazy='dynamic',
     )
 
-    def check_password(self, password):
-        return self.password_hash == sha256(
-            password.encode('utf-8')
-        ).hexdigest()
-
     def __init__(self, email, password=None, name=None):
         self.password_hash = sha256(password.encode('utf-8')).hexdigest()
         email = UserEmail(email)
@@ -28,6 +23,19 @@ class User(db.Model):
         db.session.add(email)
         db.session.commit()
         self.emails.append(email)
+
+    def check_password(self, password):
+        return self.password_hash == sha256(
+            password.encode('utf-8')
+        ).hexdigest()
+
+    @staticmethod
+    def find_by_email(email):
+        """Given an email address, return to User with which it is associated
+        """
+        return UserEmail.query.filter_by(
+            email=email
+        ).one().user
 
 
 class UserEmail(db.Model):
