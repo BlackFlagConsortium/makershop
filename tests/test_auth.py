@@ -2,7 +2,7 @@ from http import client as http
 
 from makershop.models import db
 from makershop.models.user import User
-from makershop.tests import MakershopTestCase
+from tests import MakershopTestCase
 
 
 class AuthTestCase(MakershopTestCase):
