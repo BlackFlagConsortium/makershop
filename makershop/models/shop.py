@@ -5,7 +5,7 @@ from .user import User
 class Shop(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(), nullable=True)
-    owner = db.Column(db.ForeignKey(User))
+    owner = db.Column(db.Integer, db.ForeignKey(User.id))
 
     def __init__(self, name=None):
         if name:

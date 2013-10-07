@@ -20,5 +20,6 @@ def create_app(**kwargs):
     from . import views
 
     app.register_blueprint(views.users_bp, url_prefix='/user')
+    app.register_blueprint(views.shop_bp, url_prefix='/shop')
 
     return app
