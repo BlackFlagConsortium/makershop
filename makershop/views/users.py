@@ -1,6 +1,6 @@
 from http import client as http
 
-from flask import Blueprint, request
+from flask import Blueprint, request, session
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -21,7 +21,9 @@ def login():
         return ApiResponse('"password" is required.', status=http.BAD_REQUEST)
 
     try:
-        if User.find_by_email(u).check_password(p):
+        user = User.find_by_email(u).check_password(p)
+        if user:
+            session['user'] = user
             return ApiResponse('Login successful.')
     except NoResultFound:
         # User doesn't exist
@@ -29,6 +31,15 @@ def login():
 
     # if the user doesn't exist -or- if the password is wrong.
     return ApiResponse('Login failed.', status=http.FORBIDDEN)
+
+
+@bp.route('/logout/', methods=['POST', ])
+def logout():
+    try:
+        del session['user']
+    except KeyError:
+        pass
+    return ApiResponse('Logout successful.')
 
 
 @bp.route('/register/', methods=['POST', ])

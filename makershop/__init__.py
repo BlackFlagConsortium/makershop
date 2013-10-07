@@ -1,9 +1,12 @@
+import os
+
 from flask import Flask
 
 
 def create_app(**kwargs):
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'devkey')
 
     from .models import db
 

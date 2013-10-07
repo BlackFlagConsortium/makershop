@@ -81,6 +81,30 @@ class LoginTestCase(MakershopTestCase):
         self.assertEqual(http.OK, r.status_code)
 
 
+class LogoutTestCase(MakershopTestCase):
+    def setUp(self):
+        super(LogoutTestCase, self).setUp()
+        self.client = self.app.test_client()
+
+        with self.app.test_request_context():
+            u = User(email='foo@bar.com', password='asdfasdf')
+            db.session.add(u)
+            db.session.commit()
+
+        r = self.client.post(
+            '/user/login/',
+            data={
+                'username': 'foo@bar.com',
+                'password': 'asdfasdf',
+            }
+        )
+
+    def test_logout(self):
+        r = self.client.post('/user/logout/')
+
+        self.assertEqual(http.OK, r.status_code)
+
+
 class RegistrationTestCase(MakershopTestCase):
     def setUp(self):
         super(RegistrationTestCase, self).setUp()
