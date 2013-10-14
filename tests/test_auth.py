@@ -5,23 +5,20 @@ from nose.tools import *
 from makershop.models import db
 from makershop.models.user import User
 from tests import MakershopTestCase
+from tests.factories import UserFactory
 
 
 class AuthTestCase(MakershopTestCase):
 
     def test_password_match(self):
         with self.app.test_request_context():
-            user = User(name='Test User', email='test@user.com', password='foo')
-            db.session.add(user)
-            db.session.commit()
+            user = UserFactory.create(password='foo')
 
             assert_true(user.check_password('foo'))
 
     def test_password_mismatch(self):
         with self.app.test_request_context():
-            user = User(name='Test User', email='test@user.com', password='foo')
-            db.session.add(user)
-            db.session.commit()
+            user = UserFactory.create(password='foo')
 
             assert_false(user.check_password('bar'))
 
@@ -48,17 +45,15 @@ class LoginTestCase(MakershopTestCase):
 
     def test_auth_failure_bad_password(self):
         with self.app.test_request_context():
-            u = User(email='foo@bar.com', password='correct password')
-            db.session.add(u)
-            db.session.commit()
+            u = UserFactory.create()
 
-        r = self.client.post(
-            '/user/login/',
-            data={
-                'username': 'foo@bar.com',
-                'password': 'incorrect password',
-            }
-        )
+            r = self.client.post(
+                '/user/login/',
+                data={
+                    'username': u.emails[0].email,
+                    'password': 'incorrect password',
+                }
+            )
 
         self.assert_api_error(
             response=r,
@@ -68,17 +63,15 @@ class LoginTestCase(MakershopTestCase):
 
     def test_auth_success(self):
         with self.app.test_request_context():
-            u = User(email='foo@bar.com', password='asdfasdf')
-            db.session.add(u)
-            db.session.commit()
+            u = UserFactory.create(password='foo')
 
-        r = self.client.post(
-            '/user/login/',
-            data={
-                'username': 'foo@bar.com',
-                'password': 'asdfasdf',
-            }
-        )
+            r = self.client.post(
+                '/user/login/',
+                data={
+                    'username': u.emails[0].email,
+                    'password': 'foo',
+                }
+            )
 
         assert_equal(http.OK, r.status_code)
 
@@ -89,17 +82,15 @@ class LogoutTestCase(MakershopTestCase):
         self.client = self.app.test_client()
 
         with self.app.test_request_context():
-            u = User(email='foo@bar.com', password='asdfasdf')
-            db.session.add(u)
-            db.session.commit()
+            u = UserFactory.create(password='foo')
 
-        r = self.client.post(
-            '/user/login/',
-            data={
-                'username': 'foo@bar.com',
-                'password': 'asdfasdf',
-            }
-        )
+            self.client.post(
+                '/user/login/',
+                data={
+                    'username': u.emails[0].email,
+                    'password': 'foo',
+                }
+            )
 
     def test_logout(self):
         r = self.client.post('/user/logout/')
