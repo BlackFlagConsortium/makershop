@@ -21,7 +21,7 @@ class MakershopTestCase(unittest.TestCase):
         with self.app.test_request_context():
             db.drop_all()
 
-    def assertApiError(self, response, status_code, message):
+    def assert_api_error(self, response, status_code, message):
         if response.status_code != status_code:
             raise AssertionError(
                 "HTTP Status: {actual} !== {expected}".format(

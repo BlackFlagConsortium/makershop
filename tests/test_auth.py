@@ -1,5 +1,7 @@
 from http import client as http
 
+from nose.tools import *
+
 from makershop.models import db
 from makershop.models.user import User
 from tests import MakershopTestCase
@@ -13,7 +15,7 @@ class AuthTestCase(MakershopTestCase):
             db.session.add(user)
             db.session.commit()
 
-            self.assertTrue(user.check_password('foo'))
+            assert_true(user.check_password('foo'))
 
     def test_password_mismatch(self):
         with self.app.test_request_context():
@@ -21,7 +23,7 @@ class AuthTestCase(MakershopTestCase):
             db.session.add(user)
             db.session.commit()
 
-            self.assertFalse(user.check_password('bar'))
+            assert_false(user.check_password('bar'))
 
 
 class LoginTestCase(MakershopTestCase):
@@ -38,7 +40,7 @@ class LoginTestCase(MakershopTestCase):
             }
         )
 
-        self.assertApiError(
+        self.assert_api_error(
             response=r,
             status_code=http.FORBIDDEN,
             message='Login failed.'
@@ -58,7 +60,7 @@ class LoginTestCase(MakershopTestCase):
             }
         )
 
-        self.assertApiError(
+        self.assert_api_error(
             response=r,
             status_code=http.FORBIDDEN,
             message='Login failed.'
@@ -78,7 +80,7 @@ class LoginTestCase(MakershopTestCase):
             }
         )
 
-        self.assertEqual(http.OK, r.status_code)
+        assert_equal(http.OK, r.status_code)
 
 
 class LogoutTestCase(MakershopTestCase):
@@ -102,7 +104,7 @@ class LogoutTestCase(MakershopTestCase):
     def test_logout(self):
         r = self.client.post('/user/logout/')
 
-        self.assertEqual(http.OK, r.status_code)
+        assert_equal(http.OK, r.status_code)
 
 
 class RegistrationTestCase(MakershopTestCase):
@@ -119,7 +121,7 @@ class RegistrationTestCase(MakershopTestCase):
             }
         )
 
-        self.assertApiError(
+        self.assert_api_error(
             response=r,
             status_code=http.BAD_REQUEST,
             message='"email" is required.'
@@ -134,7 +136,7 @@ class RegistrationTestCase(MakershopTestCase):
             }
         )
 
-        self.assertApiError(
+        self.assert_api_error(
             response=r,
             status_code=http.BAD_REQUEST,
             message='"password" is required.'
@@ -155,7 +157,7 @@ class RegistrationTestCase(MakershopTestCase):
             }
         )
 
-        self.assertApiError(
+        self.assert_api_error(
             response=r,
             status_code=http.BAD_REQUEST,
             message='Email associated with existing account.'
@@ -171,4 +173,4 @@ class RegistrationTestCase(MakershopTestCase):
             }
         )
 
-        self.assertEqual(http.OK, r.status_code)
+        assert_equal(http.OK, r.status_code)

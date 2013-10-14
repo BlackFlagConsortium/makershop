@@ -1,6 +1,7 @@
 from http import client as http
 
 from flask import json
+from nose.tools import *
 
 from tests import MakershopTestCase
 
@@ -50,16 +51,16 @@ class ProductTestCase(MakershopTestCase):
 class CreateProductTestCase(ProductTestCase):
 
     def test_status_code(self):
-        self.assertEqual(http.CREATED, self.r.status_code)
+        assert_equal(http.CREATED, self.r.status_code)
 
     def test_redirect_location(self):
-        self.assertEqual(
+        assert_equal(
             'http://localhost/shop/1/product/1/',
             self.r.headers.get('Location'),
         )
 
     def test_return_dict(self):
-        self.assertEqual(
+        assert_equal(
             {
                 'id': 1,
                 'shop_id': 1,
@@ -97,17 +98,17 @@ class UpdateProductTestCase(ProductTestCase):
     }
 
     def test_put_status_code(self):
-        self.assertEqual(http.OK, self.update_response.status_code)
+        assert_equal(http.OK, self.update_response.status_code)
 
     def test_put_dict(self):
-        self.assertEqual(
+        assert_equal(
             self.expected_dict,
             json.loads(self.update_response.data)
         )
 
     def test_get_dict(self):
         print(self.get_response.data)
-        self.assertEqual(
+        assert_equal(
             self.expected_dict,
             json.loads(self.get_response.data)
         )

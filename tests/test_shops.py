@@ -1,6 +1,7 @@
 from http import client as http
 
 from flask import json
+from nose.tools import *
 
 from tests import MakershopTestCase
 
@@ -37,11 +38,11 @@ class CreateShopTestCase(MakershopTestCase):
             }
         )
 
-        self.assertEqual(http.OK, r.status_code)
+        assert_equal(http.OK, r.status_code)
 
         msg = json.loads(r.data)
 
-        self.assertIsNotNone(msg.get('id'))
+        assert_is_not_none(msg.get('id'))
 
 
 class ViewShopTestCase(MakershopTestCase):
@@ -79,7 +80,7 @@ class ViewShopTestCase(MakershopTestCase):
     def test_name(self):
         r = self.client.get('/shop/1/')
 
-        self.assertEqual(
+        assert_equal(
             {
                 'name': 'Test Shop',
                 'id': 1
