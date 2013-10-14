@@ -7,9 +7,16 @@ class Shop(db.Model):
     name = db.Column(db.String(), nullable=True)
     owner = db.Column(db.Integer, db.ForeignKey(User.id))
 
-    def __init__(self, name=None):
-        if name:
-            self.name = name
+    products = db.relationship(
+        'Product',
+        backref='shop',
+        uselist=True,
+        lazy='dynamic',
+    )
+
+    def __init__(self, name, owner):
+        self.name = name
+        self.owner = owner
 
     def __repr__(self):
         return '<Shop({id}: "{name}")>'.format(id=self.id, name=self.name)

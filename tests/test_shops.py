@@ -8,7 +8,7 @@ from tests import MakershopTestCase
 class CreateShopTestCase(MakershopTestCase):
     def setUp(self):
         super(CreateShopTestCase, self).setUp()
-        self.client = self.app.test_client()
+        self.client = self.app.test_client(use_cookies=True)
 
         # register
         self.client.post(
@@ -42,3 +42,47 @@ class CreateShopTestCase(MakershopTestCase):
         msg = json.loads(r.data)
 
         self.assertIsNotNone(msg.get('id'))
+
+
+class ViewShopTestCase(MakershopTestCase):
+    def setUp(self):
+        super(ViewShopTestCase, self).setUp()
+        self.client = self.app.test_client(use_cookies=True)
+
+        # register
+        self.client.post(
+            '/user/register/',
+            data={
+                'email': 'foo@bar.com',
+                'password': 'asdfasdf',
+                'name': 'Test User',
+            }
+        )
+
+        # login
+        self.client.post(
+            '/user/login/',
+            data={
+                'username': 'foo@bar.com',
+                'password': 'asdfasdf',
+            }
+        )
+
+        # make shop
+        self.client.post(
+            '/shop/create/',
+            data={
+                'name': 'Test Shop'
+            }
+        )
+
+    def test_name(self):
+        r = self.client.get('/shop/1/')
+
+        self.assertEqual(
+            {
+                'name': 'Test Shop',
+                'id': 1
+            },
+            json.loads(r.data),
+        )
