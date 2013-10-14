@@ -5,9 +5,9 @@ from flask import json
 from tests import MakershopTestCase
 
 
-class CreateProductCase(MakershopTestCase):
+class ProductTestCase(MakershopTestCase):
     def setUp(self):
-        super(CreateProductCase, self).setUp()
+        super(ProductTestCase, self).setUp()
         self.client = self.app.test_client(use_cookies=True)
 
         # register
@@ -46,6 +46,9 @@ class CreateProductCase(MakershopTestCase):
             }
         )
 
+
+class CreateProductTestCase(ProductTestCase):
+
     def test_status_code(self):
         self.assertEqual(http.CREATED, self.r.status_code)
 
@@ -66,4 +69,45 @@ class CreateProductCase(MakershopTestCase):
                 'visible': False,
             },
             json.loads(self.r.data)
+        )
+
+
+class UpdateProductTestCase(ProductTestCase):
+    def setUp(self):
+        super(UpdateProductTestCase, self).setUp()
+        self.update_response = self.client.put(
+            self.r.headers.get('Location'),
+            data={
+                'title': 'Changed Title',
+                'base_price': 150,
+                'description': 'Changed Description',
+                'visible': 1,
+            }
+        )
+
+        self.get_response = self.client.get(self.r.headers.get('Location'))
+
+    expected_dict = {
+        'id': 1,
+        'shop_id': 1,
+        'title': 'Changed Title',
+        'base_price': 150,
+        'description': 'Changed Description',
+        'visible': True,
+    }
+
+    def test_put_status_code(self):
+        self.assertEqual(http.OK, self.update_response.status_code)
+
+    def test_put_dict(self):
+        self.assertEqual(
+            self.expected_dict,
+            json.loads(self.update_response.data)
+        )
+
+    def test_get_dict(self):
+        print(self.get_response.data)
+        self.assertEqual(
+            self.expected_dict,
+            json.loads(self.get_response.data)
         )

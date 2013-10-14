@@ -1,6 +1,6 @@
 from http import client as http
 
-from flask import Blueprint, redirect, request, session
+from flask import Blueprint, request, session
 
 from ..models.product import Product
 from ..models.shop import Shop
@@ -58,6 +58,28 @@ def add_product(shop_id):
         data=product.to_dict(),
     )
 
+
 @bp.route('/<int:shop_id>/product/<int:product_id>/', methods=['GET', ])
-def view_product(shop_id):
-    return ''
+def view_product(shop_id, product_id):
+    return ApiResponse(
+        status=http.OK,
+        data=Product.query.filter_by(
+            shop_id=shop_id,
+            id=product_id
+        ).one().to_dict()
+    )
+
+
+@bp.route('/<int:shop_id>/product/<int:product_id>/', methods=['PUT', ])
+def update_product(shop_id, product_id):
+    product = Product.query.filter_by(shop_id=shop_id, id=product_id).one()
+    for k, v in request.form.items():
+        setattr(product, k, v)
+
+    db.session.add(product)
+    db.session.commit()
+
+    return ApiResponse(
+        status=http.OK,
+        data=product.to_dict(),
+    )
