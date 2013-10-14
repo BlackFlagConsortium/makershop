@@ -107,7 +107,6 @@ class UpdateProductTestCase(ProductTestCase):
         )
 
     def test_get_dict(self):
-        print(self.get_response.data)
         assert_equal(
             self.expected_dict,
             json.loads(self.get_response.data)
