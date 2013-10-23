@@ -21,9 +21,10 @@ def login():
         return ApiResponse('"password" is required.', status=http.BAD_REQUEST)
 
     try:
-        user = User.find_by_email(u).check_password(p)
-        if user:
-            session['user'] = user
+        user = User.query.filter_by(email=u).one()
+
+        if user.check_password(p):
+            session['user_id'] = user.id
             return ApiResponse('Login successful.')
     except NoResultFound:
         # User doesn't exist

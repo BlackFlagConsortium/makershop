@@ -94,7 +94,7 @@ class UpdateProductTestCase(ProductTestCase):
         'title': 'Changed Title',
         'base_price': 150,
         'description': 'Changed Description',
-        'visible': True,
+        'visible': 1,
     }
 
     def test_put_status_code(self):

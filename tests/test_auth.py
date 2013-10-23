@@ -1,5 +1,6 @@
 from http import client as http
 
+import flask
 from nose.tools import *
 
 from makershop.models import db
@@ -50,7 +51,7 @@ class LoginTestCase(MakershopTestCase):
             r = self.client.post(
                 '/user/login/',
                 data={
-                    'username': u.emails[0].email,
+                    'username': u.email,
                     'password': 'incorrect password',
                 }
             )
@@ -61,19 +62,35 @@ class LoginTestCase(MakershopTestCase):
             message='Login failed.'
         )
 
-    def test_auth_success(self):
+    def test_auth_returns_success(self):
         with self.app.test_request_context():
             u = UserFactory.create(password='foo')
 
             r = self.client.post(
                 '/user/login/',
                 data={
-                    'username': u.emails[0].email,
+                    'username': u.email,
                     'password': 'foo',
                 }
             )
 
         assert_equal(http.OK, r.status_code)
+
+    def test_auth_success_session(self):
+
+        with self.app.test_client() as c:
+            with self.app.test_request_context():
+                u = UserFactory.create(password='foo')
+
+            r = c.post(
+                '/user/login/',
+                data={
+                    'username': u.email,
+                    'password': 'foo',
+                }
+            )
+
+            assert_equal(u.id, flask.session.get('user_id'))
 
 
 class LogoutTestCase(MakershopTestCase):
@@ -87,7 +104,7 @@ class LogoutTestCase(MakershopTestCase):
             self.client.post(
                 '/user/login/',
                 data={
-                    'username': u.emails[0].email,
+                    'username': u.email,
                     'password': 'foo',
                 }
             )

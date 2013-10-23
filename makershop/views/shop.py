@@ -2,6 +2,7 @@ from http import client as http
 
 from flask import Blueprint, request, session
 
+from ..auth import auth_required
 from ..models.product import Product
 from ..models.shop import Shop
 from ..models import db
@@ -10,6 +11,7 @@ from ..views.common import ApiResponse, ApiRedirectResponse
 bp = Blueprint('shop', __name__)
 
 
+@auth_required
 @bp.route('/create/', methods=['POST', ])
 def create():
     name = request.form.get('name')
@@ -78,6 +80,10 @@ def update_product(shop_id, product_id):
 
     db.session.add(product)
     db.session.commit()
+    
+    # Some type coercion may be done upon save. Refresh pulls the object from
+    #   the DB instead of relying on the input values.
+    db.session.refresh(product)
 
     return ApiResponse(
         status=http.OK,

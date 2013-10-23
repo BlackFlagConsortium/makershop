@@ -31,12 +31,15 @@ class CreateShopTestCase(MakershopTestCase):
         )
 
     def test_make_shop(self):
+
         r = self.client.post(
             '/shop/create/',
             data={
                 'name': 'Test Shop'
             }
         )
+
+
 
         assert_equal(http.OK, r.status_code)
 

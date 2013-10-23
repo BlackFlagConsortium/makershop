@@ -12,3 +12,9 @@ class UserFactory(SQLAlchemyModelFactory):
     email = factory.Sequence(lambda x: 'john_{}@domain.com'.format(x))
     password = 'fake_password'
     name = factory.Sequence(lambda x: 'John{}'.format(x))
+
+    @classmethod
+    def _create(cls, target_class, *args, **kwargs):
+        rv = super()._create(target_class, *args, **kwargs)
+        db.session.commit()
+        return rv
