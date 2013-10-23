@@ -17,9 +17,9 @@ def create_app(**kwargs):
 
     app.db = db
 
-    from . import views
+    from .views import users, shop
 
-    app.register_blueprint(views.users_bp, url_prefix='/user')
-    app.register_blueprint(views.shop_bp, url_prefix='/shop')
+    app.register_blueprint(users.bp, url_prefix='/user')
+    app.register_blueprint(shop.bp, url_prefix='/shop')
 
     return app

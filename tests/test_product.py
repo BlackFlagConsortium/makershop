@@ -3,32 +3,12 @@ from http import client as http
 from flask import json
 from nose.tools import *
 
-from tests import MakershopTestCase
+from tests import UserLoggedIn
 
 
-class ProductTestCase(MakershopTestCase):
+class ProductTestCase(UserLoggedIn):
     def setUp(self):
         super(ProductTestCase, self).setUp()
-        self.client = self.app.test_client(use_cookies=True)
-
-        # register
-        self.client.post(
-            '/user/register/',
-            data={
-                'email': 'foo@bar.com',
-                'password': 'asdfasdf',
-                'name': 'Test User',
-            }
-        )
-
-        # login
-        self.client.post(
-            '/user/login/',
-            data={
-                'email': 'foo@bar.com',
-                'password': 'asdfasdf',
-            }
-        )
 
         # make a shop
         self.shop = json.loads(

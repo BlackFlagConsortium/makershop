@@ -11,8 +11,8 @@ from ..views.common import ApiResponse, ApiRedirectResponse
 bp = Blueprint('shop', __name__)
 
 
-@auth_required
 @bp.route('/create/', methods=['POST', ])
+@auth_required
 def create():
     name = request.form.get('name')
     if not name:

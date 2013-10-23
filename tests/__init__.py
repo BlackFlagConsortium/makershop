@@ -5,6 +5,7 @@ from flask import json
 
 from makershop import create_app
 from makershop.models import db
+from .factories import UserFactory
 
 
 class MakershopTestCase(unittest.TestCase):
@@ -16,6 +17,7 @@ class MakershopTestCase(unittest.TestCase):
         with self.app.test_request_context():
             db.drop_all()
             db.create_all()
+        self.client = self.app.test_client()
 
     def tearDown(self):
         with self.app.test_request_context():
@@ -37,3 +39,20 @@ class MakershopTestCase(unittest.TestCase):
                         json.dumps({'message': message})
                     )
                 )
+
+
+class UserLoggedIn(MakershopTestCase):
+    def setUp(self):
+        super().setUp()
+        self.client = self.app.test_client()
+
+        with self.app.test_request_context():
+            self.user = UserFactory.create(password='foo')
+
+            self.client.post(
+                '/user/login/',
+                data={
+                    'username': self.user.email,
+                    'password': 'foo',
+                }
+            )

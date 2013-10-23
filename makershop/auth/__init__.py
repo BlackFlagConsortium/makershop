@@ -9,7 +9,7 @@ from ..views.common import ApiResponse
 def auth_required(f):
     @wraps(f)
     def wrapped(*args, **kwargs):
-        if not session.get('user'):
+        if not session.get('user_id'):
             return ApiResponse(
                 'You are not logged in.',
                 status=http.UNAUTHORIZED,
