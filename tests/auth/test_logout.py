@@ -1,5 +1,6 @@
 from http import client as http
 
+import flask
 from nose.tools import *
 
 from .. import MakershopTestCase
@@ -22,7 +23,17 @@ class LogoutTestCase(MakershopTestCase):
                 }
             )
 
-    def test_logout(self):
+    def test_logout_returns_success(self):
         r = self.client.post('/user/logout/')
 
         assert_equal(http.OK, r.status_code)
+
+    def test_logout_success_session(self):
+        with self.app.test_client() as tc:
+            with tc.session_transaction() as s:
+                s['user_id'] = 1
+
+            tc.post('/user/logout/')
+
+            assert False
+
