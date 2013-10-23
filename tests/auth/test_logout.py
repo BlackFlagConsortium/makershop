@@ -35,5 +35,5 @@ class LogoutTestCase(MakershopTestCase):
 
             tc.post('/user/logout/')
 
-            assert False
+            assert_is_none(flask.session.get('user_id'))
 

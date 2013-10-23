@@ -36,10 +36,7 @@ def login():
 
 @bp.route('/logout/', methods=['POST', ])
 def logout():
-    try:
-        del session['user']
-    except KeyError:
-        pass
+    session['user_id'] = None
     return ApiResponse('Logout successful.')
 
 
